@@ -1,7 +1,24 @@
 # Name: Xi (Benson) Chen, Zhiyu (Yuki) Pu
 # Student ID: Chen: 3617 1540, Pu: 2783 7481
 # Email: chexfeii@umich.edu, zhiyupu@umich.edu
-# How we used generative AI:
+
+# Work Distribution: 
+
+# Benson: 
+
+# Imported penguins.csv file to the folder and Wrote load_data to load data from penguins.csv file.
+# Wrote avg_mass_by_species_sex method to calculate average body mass by species and sex.
+# Wrote species_flipper_avg and flipper_above_species_avg methods, they treated as one calculation since they works together to compute species-level flipper averages and percentage above average.
+# Wrote corresponding unit tests for the functions and coordinated integration in the main block.
+# Developed and tested four test cases for two calculation functions.
+
+# Yuki:
+
+# Wrote clean_and_cast function to clean and cast data types.
+# Wrote avg_bill_by_species_sex method to calculate average bill length/depth by species and sex.
+# Wrote species_bill_ratio_median method to calculate the percentage of penguins with bill length/depth ratio above species median in specific island.
+# Wrote corresponding unit tests for the functions and coordinated integration in the main block.
+# Developed and tested four test cases for two calculation functions.
 
 import os
 import csv
@@ -62,6 +79,7 @@ def avg_mass_by_species_sex(cleaned_data):
     for row in cleaned_data:
         species = row.get('species', '')
         sex = row.get('sex', '')
+        
         key = (species, sex)
 
         try:
@@ -155,6 +173,7 @@ def flipper_above_species_avg(cleaned_data, benson_result_2):
 
         if key in above_avg_counts:
             above_avg = above_avg_counts[key]
+        
         else:
             above_avg = 0
 
@@ -176,6 +195,7 @@ def avg_bill_by_species_sex(cleaned_data):
     for row in cleaned_data:
         species = row.get('species', '')
         sex = row.get('sex', '')
+        
         key = (species, sex)
 
         try:
@@ -236,6 +256,7 @@ def species_bill_ratio_median(cleaned_data):
 
             if n % 2 == 0:
                 median = (sorted_ratios[mid - 1] + sorted_ratios[mid]) / 2
+            
             else:
                 median = sorted_ratios[mid]
 
@@ -280,6 +301,7 @@ def species_bill_ratio_median(cleaned_data):
 
         if total > 0:
             percentage = (above_median / total) * 100
+        
         else:
             percentage = 0.0
 
