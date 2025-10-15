@@ -34,13 +34,20 @@ def clean_and_cast(data):
         for key, value in row.items():
             cleaned_value = str(value).strip()
 
+            if cleaned_value == '':
+                continue
+
             if cleaned_value == '' or cleaned_value.lower() == 'na':
                 new_row[key] = None
 
             else:
                 try:
-                    new_row[key] = float(cleaned_value)
+                    if '.' not in cleaned_value:
+                        new_row[key] = int(cleaned_value)
 
+                    else:
+                        new_row[key] = float(cleaned_value)
+                        
                 except ValueError:
                     new_row[key] = cleaned_value
 
