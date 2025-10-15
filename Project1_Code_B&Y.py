@@ -15,7 +15,7 @@ def load_data(f):
 
     data = []
 
-    with open(f, 'r') as file:
+    with open(full_path, 'r', newline = '') as file:
         r = csv.DictReader(file)
 
         for row in r:
@@ -25,6 +25,7 @@ def load_data(f):
 
 #Drops rows with invalid or missing data
 def clean_and_cast(data):
+    null_values = {'', 'na', 'null'}
 
     cleaned_data = []
 
@@ -35,22 +36,19 @@ def clean_and_cast(data):
         for key, value in row.items():
             cleaned_value = str(value).strip()
 
-            if cleaned_value == '':
+            if cleaned_value.lower() in null_values:
+                new_row[key] = None
                 continue
 
-            if cleaned_value == '' or cleaned_value.lower() == 'na':
-                new_row[key] = None
+            try:
+                if '.' not in cleaned_value:
+                    new_row[key] = int(cleaned_value)
 
-            else:
-                try:
-                    if '.' not in cleaned_value:
-                        new_row[key] = int(cleaned_value)
+                else:
+                    new_row[key] = float(cleaned_value)
 
-                    else:
-                        new_row[key] = float(cleaned_value)
-
-                except ValueError:
-                    new_row[key] = cleaned_value
+            except ValueError:
+                new_row[key] = cleaned_value
 
         cleaned_data.append(new_row)
 
@@ -81,14 +79,12 @@ def avg_mass_by_species_sex(cleaned_data):
 
     for (species, sex), masses in data.items():
         avg_mass = sum(masses) / len(masses)
-            
-        count = len(masses)
 
-        benson_result_1.append((species, sex, avg_mass, count))
+        benson_result_1.append((species, sex, avg_mass))
 
     return benson_result_1
 
-#Benson's Second Calculation: Calculate average flipper length of penguins for each species
+#Benson's Second Calculation (1): Calculate average flipper length of penguins for each species
 def species_flipper_avg(cleaned_data):
     
     data = {}
@@ -116,7 +112,7 @@ def species_flipper_avg(cleaned_data):
 
     return benson_result_2
 
-#Benson's Third Calculation: Calculate the percentage of penguins with flipper length greater than the average flipper length for each island and species
+#Benson's Second Calculation (2): Calculate the percentage of penguins with flipper length greater than the average flipper length for each island and species
 def flipper_above_species_avg(cleaned_data, benson_result_2):
     
     total_counts = {}
@@ -200,9 +196,8 @@ def avg_bill_by_species_sex(cleaned_data):
     for (species, sex), values in data.items():
         avg_length = sum(data[(species, sex)]['bill_length']) / len(data[(species, sex)]['bill_length'])
         avg_depth = sum(data[(species, sex)]['bill_depth']) / len(data[(species, sex)]['bill_depth'])
-        count = len(data[(species, sex)]['bill_length'])
 
-        yuki_result_1.append((species, sex, avg_length, avg_depth, count))
+        yuki_result_1.append((species, sex, avg_length, avg_depth))
 
     return yuki_result_1
 
@@ -292,6 +287,7 @@ def species_bill_ratio_median(cleaned_data):
 
     return yuki_result_2
 
+#Unit Tests For All Calculations
 class TestCalculations(unittest.TestCase):
 
     def setUp(self):
@@ -324,39 +320,73 @@ class TestCalculations(unittest.TestCase):
         result = species_bill_ratio_median(self.cleaned_data)
         self.assertIsInstance(result, list)
         self.assertGreater(len(result), 0)
-        
-if __name__ == "__main__":
-    unittest.main()
 
-    #data = load_data('penguins.csv')
-    #cleaned_data = clean_and_cast(data)
+#Write all results to a CSV file
+def write_csv(filename, results_dict):
+
+    with open(filename, 'w', newline='') as file:
+        writer = csv.writer(file)
+
+        for title, (headers, rows) in results_dict.items():
+            writer.writerow([])
+            writer.writerow([title])
+            writer.writerow(headers)
+            writer.writerows(rows)
+
+if __name__ == "__main__":
+    unittest.main(exit=False)
+
+    data = load_data('penguins.csv')
+    cleaned_data = clean_and_cast(data)
 
     #Run Benson's First Calculation
-    #benson_result_1 = avg_mass_by_species_sex(cleaned_data)
+    benson_result_1 = avg_mass_by_species_sex(cleaned_data)
     #print("\nBenson's First Calculation: Average Body Mass by Species and Sex\n")
     #for species, sex, avg_mass, count in benson_result_1:
         #print(f"Species: {species}, Sex: {sex}, Average Body Mass: {avg_mass:.2f} g, Count: {count}")
 
     #Run Benson's Second Calculation
-    #benson_result_2 = species_flipper_avg(cleaned_data)
+    benson_result_2 = species_flipper_avg(cleaned_data)
     #print("\nBenson's Second Calculation: Average Flipper Length by Species\n")
     #for species, avg_length in benson_result_2.items():
         #print(f"Species: {species}, Average Flipper Length: {avg_length:.2f} mm")
 
     #Run Benson's Third Calculation
-    #benson_result_3 = flipper_above_species_avg(cleaned_data, benson_result_2)
+    benson_result_3 = flipper_above_species_avg(cleaned_data, benson_result_2)
     #print("\nBenson's Third Calculation: Percentage of Penguins with Flipper Length Above Species Average by Island and Species\n")
     #for island, species, percentage in benson_result_3:
         #print(f"Island: {island}, Species: {species}, Percentage Above Average Flipper Length: {percentage:.2f}%")
 
     #Run Yuki's First Calculation
-    #yuki_result_1 = avg_bill_by_species_sex(cleaned_data)
+    yuki_result_1 = avg_bill_by_species_sex(cleaned_data)
     #print("\nYuki's First Calculation: Average Bill Length/Depth by Species and Sex\n")
     #for species, sex, avg_length, avg_depth, count in yuki_result_1:
         #print(f"Species: {species}, Sex: {sex}, Average Bill Length: {avg_length:.2f} mm, Average Bill Depth: {avg_depth:.2f} mm, Count: {count}")
 
     #Run Yuki's Second Calculation
-    #yuki_result_2 = species_bill_ratio_median(cleaned_data)
+    yuki_result_2 = species_bill_ratio_median(cleaned_data)
     #print("\nYuki's Second Calculation: Percentage of Penguins with Bill Length/Depth Ratio Above Species Median by Island and Species\n")
     #for island, species, percentage in yuki_result_2:
         #print(f"Island: {island}, Species: {species}, Percentage Above Median Bill Length/Depth Ratio: {percentage:.2f}%")
+
+    #Write all results to a CSV file
+    results = {
+        "Benson's First Calculation: Average Body Mass by Species and Sex": (
+            ["Species", "Sex", "Average Body Mass (g)"],
+            benson_result_1
+        ),
+        "Benson's Second Calculation: The Percentage of Penguins with Flipper Length Above Species Average by Island and Species": (
+            ["Island", "Species", "Percentage Above Average Flipper Length (%)"],
+            benson_result_3
+        ),
+        "Yuki's First Calculation: Average Bill Length/Depth by Species and Sex": (
+            ["Species", "Sex", "Average Bill Length (mm)", "Average Bill Depth (mm)"],
+            yuki_result_1
+        ),
+        "Yuki's Second Calculation: The Percentage of Penguins with Bill Length/Depth Ratio Above Species Median by Island and Species": (
+            ["Island", "Species", "Percentage Above Median Bill Length/Depth Ratio (%)"],
+            yuki_result_2
+        )
+    }
+
+    write_csv('B&Y_penguin_analysis_results.csv', results)
