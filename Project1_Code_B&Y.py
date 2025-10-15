@@ -5,6 +5,7 @@
 
 import os
 import csv
+import unittest
 
 #Read penguins.csv file
 def load_data(f):
@@ -291,36 +292,61 @@ def species_bill_ratio_median(cleaned_data):
 
     return yuki_result_2
 
+class TestCalculations(unittest.TestCase):
+
+    def setUp(self):
+        self.data = load_data('penguins.csv')
+        self.cleaned_data = clean_and_cast(self.data)
+
+    def test_avg_mass_by_species_sex(self):
+        result = avg_mass_by_species_sex(self.cleaned_data)
+        self.assertIsInstance(result, list)
+        self.assertGreater(len(result), 0)
+
+    def test_species_flipper_avg(self):
+        result = species_flipper_avg(self.cleaned_data)
+        self.assertIsInstance(result, dict)
+        self.assertIn('Adelie', result)
+        self.assertTrue(result['Adelie'] > 0)
+
+    def test_flipper_above_species_avg(self):
+        benson_result_2 = species_flipper_avg(self.cleaned_data)
+        result = flipper_above_species_avg(self.cleaned_data, benson_result_2)
+        self.assertIsInstance(result, list)
+        self.assertGreater(len(result), 0)
+
 if __name__ == "__main__":
-    data = load_data('penguins.csv')
-    cleaned_data = clean_and_cast(data)
+    unittest.main()
+
+    #data = load_data('penguins.csv')
+    #cleaned_data = clean_and_cast(data)
 
     #Run Benson's First Calculation
-    benson_result_1 = avg_mass_by_species_sex(cleaned_data)
-    print("\nBenson's First Calculation: Average Body Mass by Species and Sex\n")
-    for species, sex, avg_mass, count in benson_result_1:
-        print(f"Species: {species}, Sex: {sex}, Average Body Mass: {avg_mass:.2f} g, Count: {count}")
+    #benson_result_1 = avg_mass_by_species_sex(cleaned_data)
+    #print("\nBenson's First Calculation: Average Body Mass by Species and Sex\n")
+    #for species, sex, avg_mass, count in benson_result_1:
+        #print(f"Species: {species}, Sex: {sex}, Average Body Mass: {avg_mass:.2f} g, Count: {count}")
 
     #Run Benson's Second Calculation
-    benson_result_2 = species_flipper_avg(cleaned_data)
-    print("\nBenson's Second Calculation: Average Flipper Length by Species\n")
-    for species, avg_length in benson_result_2.items():
-        print(f"Species: {species}, Average Flipper Length: {avg_length:.2f} mm")
+    #benson_result_2 = species_flipper_avg(cleaned_data)
+    #print("\nBenson's Second Calculation: Average Flipper Length by Species\n")
+    #for species, avg_length in benson_result_2.items():
+        #print(f"Species: {species}, Average Flipper Length: {avg_length:.2f} mm")
 
     #Run Benson's Third Calculation
-    benson_result_3 = flipper_above_species_avg(cleaned_data, benson_result_2)
-    print("\nBenson's Third Calculation: Percentage of Penguins with Flipper Length Above Species Average by Island and Species\n")
-    for island, species, percentage in benson_result_3:
-        print(f"Island: {island}, Species: {species}, Percentage Above Average Flipper Length: {percentage:.2f}%")
+    #benson_result_3 = flipper_above_species_avg(cleaned_data, benson_result_2)
+    #print("\nBenson's Third Calculation: Percentage of Penguins with Flipper Length Above Species Average by Island and Species\n")
+    #for island, species, percentage in benson_result_3:
+        #print(f"Island: {island}, Species: {species}, Percentage Above Average Flipper Length: {percentage:.2f}%")
 
     #Run Yuki's First Calculation
-    yuki_result_1 = avg_bill_by_species_sex(cleaned_data)
-    print("\nYuki's First Calculation: Average Bill Length/Depth by Species and Sex\n")
-    for species, sex, avg_length, avg_depth, count in yuki_result_1:
-        print(f"Species: {species}, Sex: {sex}, Average Bill Length: {avg_length:.2f} mm, Average Bill Depth: {avg_depth:.2f} mm, Count: {count}")
+    #yuki_result_1 = avg_bill_by_species_sex(cleaned_data)
+    #print("\nYuki's First Calculation: Average Bill Length/Depth by Species and Sex\n")
+    #for species, sex, avg_length, avg_depth, count in yuki_result_1:
+        #print(f"Species: {species}, Sex: {sex}, Average Bill Length: {avg_length:.2f} mm, Average Bill Depth: {avg_depth:.2f} mm, Count: {count}")
 
     #Run Yuki's Second Calculation
-    yuki_result_2 = species_bill_ratio_median(cleaned_data)
-    print("\nYuki's Second Calculation: Percentage of Penguins with Bill Length/Depth Ratio Above Species Median by Island and Species\n")
-    for island, species, percentage in yuki_result_2:
-        print(f"Island: {island}, Species: {species}, Percentage Above Median Bill Length/Depth Ratio: {percentage:.2f}%")
+    #yuki_result_2 = species_bill_ratio_median(cleaned_data)
+    #print("\nYuki's Second Calculation: Percentage of Penguins with Bill Length/Depth Ratio Above Species Median by Island and Species\n")
+    #for island, species, percentage in yuki_result_2:
+        #print(f"Island: {island}, Species: {species}, Percentage Above Median Bill Length/Depth Ratio: {percentage:.2f}%")
