@@ -171,8 +171,41 @@ def flipper_above_species_avg(cleaned_data, benson_result_2):
 
     return benson_result_3
 
-if __name__ == '__main__':
-    
+#Yuki's First Calculation: Calculate average bill length or depth for male and female penguins in each species
+def avg_bill_by_species_sex(cleaned_data):
+
+    data = {}
+
+    for row in cleaned_data:
+        species = row.get('species', '')
+        sex = row.get('sex', '')
+        key = (species, sex)
+
+        try:
+            bill_length = float(row["bill_length_mm"])
+            bill_depth = float(row["bill_depth_mm"])
+
+        except (ValueError, TypeError, KeyError):
+            continue
+
+        if key not in data:
+            data[key] = {'bill_length': [], 'bill_depth': []}
+
+        data[key]['bill_length'].append(bill_length)
+        data[key]['bill_depth'].append(bill_depth)
+
+    yuki_result_1 = []
+
+    for (species, sex), values in data.items():
+        avg_length = sum(data[(species, sex)]['bill_length']) / len(data[(species, sex)]['bill_length'])
+        avg_depth = sum(data[(species, sex)]['bill_depth']) / len(data[(species, sex)]['bill_depth'])
+        count = len(data[(species, sex)]['bill_length'])
+
+        yuki_result_1.append((species, sex, avg_length, avg_depth, count))
+
+    return yuki_result_1
+
+if __name__ == "__main__":
     data = load_data('penguins.csv')
     cleaned_data = clean_and_cast(data)
 
@@ -193,3 +226,9 @@ if __name__ == '__main__':
     print("\nBenson's Third Calculation: Percentage of Penguins with Flipper Length Above Species Average by Island and Species\n")
     for island, species, percentage in benson_result_3:
         print(f"Island: {island}, Species: {species}, Percentage Above Average Flipper Length: {percentage:.2f}%")
+
+    #Run Yuki's First Calculation
+    yuki_result_1 = avg_bill_by_species_sex(cleaned_data)
+    print("\nYuki's First Calculation: Average Bill Length and Depth by Species and Sex\n")
+    for species, sex, avg_length, avg_depth, count in yuki_result_1:
+        print(f"Species: {species}, Sex: {sex}, Average Bill Length: {avg_length:.2f} mm, Average Bill Depth: {avg_depth:.2f} mm, Count: {count}")
