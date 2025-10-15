@@ -315,6 +315,16 @@ class TestCalculations(unittest.TestCase):
         self.assertIsInstance(result, list)
         self.assertGreater(len(result), 0)
 
+    def test_avg_bill_by_species_sex(self):
+        result = avg_bill_by_species_sex(self.cleaned_data)
+        self.assertIsInstance(result, list)
+        self.assertGreater(len(result), 0)
+
+    def test_species_bill_ratio_median(self):
+        result = species_bill_ratio_median(self.cleaned_data)
+        self.assertIsInstance(result, list)
+        self.assertGreater(len(result), 0)
+        
 if __name__ == "__main__":
     unittest.main()
 
