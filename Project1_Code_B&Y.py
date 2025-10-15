@@ -346,7 +346,7 @@ class TestCalculations(unittest.TestCase):
         islands = {r[0] for r in result}
         self.assertGreater(len(islands), 1)
 
-#Yuki's First Calculation (Avg Bill Length/Depth)
+    #Yuki's First Calculation (Avg Bill Length/Depth)
 
     def test_bill_avg_basic(self): #Normal case: returns list of tuples
         result = avg_bill_by_species_sex(self.cleaned_data)
